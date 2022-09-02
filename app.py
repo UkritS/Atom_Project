@@ -2,6 +2,7 @@ import streamlit as st # pip install streamlit
 import pandas as pd # pip install pandas
 #import plotly.express as px # pip install plotly-express
 #import plotly.figure_factory as ff
+import plotly
 from plotly.tools import FigureFactory as ff
 import base64 # Standard Python Module
 from io import StringIO, BytesIO #Standard Python Module
