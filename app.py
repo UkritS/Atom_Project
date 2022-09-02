@@ -1,6 +1,6 @@
 import streamlit as st # pip install streamlit
 import pandas as pd # pip install pandas
-import plotly.plotly
+from plotly.figure_factory import create_distplot
 #import plotly.express as px # pip install plotly-express
 #import plotly.figure_factory as ff
 #from plotly.tools import FigureFactory as ff
@@ -44,7 +44,7 @@ if uploaded_file:
 
     # -- Plot dataframe
     #fig = ff.create_distplot([df[c] for c in df.columns], df.columns, show_rug=False)
-    fig = plotly.figure_factory.create_distplot([df[c] for c in df.columns], df.columns, show_rug=False)
+    fig = create_distplot([df[c] for c in df.columns], df.columns, show_rug=False)
     fig.add_vline(LSL, line_color="red")
     fig.add_vline(USL, line_color="red")
 
