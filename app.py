@@ -1,5 +1,8 @@
 import streamlit as st # pip install streamlit
 import pandas as pd # pip install pandas
+#import plotly.express as px # pip install plotly-express
+#import plotly.figure_factory as ff
+#from plotly.tools import FigureFactory as ff
 from plotly.figure_factory import create_distplot
 import plotly.express as px
 import openpyxl
@@ -15,15 +18,23 @@ def generate_excel_download_link(dfsum):
     href= f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="data_download.xlsx">Download Process Capability Analysis</a>'
     return st.markdown(href, unsafe_allow_html=True)
 
-def generate_html_download_link(fig1):
+def generate_html_download_link1(fig1):
 #https://discuss.streamlit.io/t/how-to-add-a-download-excel-csv-function-to-a-button/4474/5
     towrite = StringIO()
     fig1.write_html(towrite, include_plotlyjs="cdn")
     towrite = BytesIO(towrite.getvalue().encode())
     b64 = base64.b64encode(towrite.read()).decode()  # some strings
-    href= f'<a href="data:text/html;charset=utf-8;base64,{b64}" download="plot.html">Download Plot</a>'
+    href= f'<a href="data:text/html;charset=utf-8;base64,{b64}" download="plot.html">Download Histogram Plot</a>'
     return st.markdown(href, unsafe_allow_html=True)
 
+def generate_html_download_link2(fig2):
+#https://discuss.streamlit.io/t/how-to-add-a-download-excel-csv-function-to-a-button/4474/5
+    towrite = StringIO()
+    fig2.write_html(towrite, include_plotlyjs="cdn")
+    towrite = BytesIO(towrite.getvalue().encode())
+    b64 = base64.b64encode(towrite.read()).decode()  # some strings
+    href= f'<a href="data:text/html;charset=utf-8;base64,{b64}" download="plot2.html">Download Distribution Plot</a>'
+    return st.markdown(href, unsafe_allow_html=True)
 #from plotly.figure_factory import create_distplot
 
 st.set_page_config(page_title='Distribution Plotter')
@@ -185,8 +196,9 @@ if uploaded_file:
         dfsum.columns = ['Min', 'Max', 'Mean', 'SD', 'Cp','Cpk','z']
         st.dataframe(dfsum)
         st.subheader('Downloads:')
+        generate_html_download_link1(fig1)
+        generate_html_download_link2(fig2)
         generate_excel_download_link(dfsum)
-        generate_html_download_link(fig1)
     else:
         st.warning('Please enter LSL and USL to review Process Capability Analysis', icon="⚠️")
 
