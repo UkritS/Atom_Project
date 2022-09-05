@@ -46,6 +46,7 @@ if showhist:
 if uploaded_file:
     st.markdown('---')
     df = pd.read_excel(uploaded_file, engine='openpyxl')
+    df = df.dropna()
     #st.dataframe(df)
 
     # -- Plot dataframe
