@@ -51,7 +51,6 @@ if uploaded_file:
 
     # -- Plot dataframe
     fig = create_distplot([df[c].dropna() for c in df.columns], df.columns, show_hist = hist, show_rug = False)
-
     fig.add_vline(LSL, line_color="red")
     fig.add_vline(USL, line_color="red")
 
