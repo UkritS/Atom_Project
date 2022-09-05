@@ -1,9 +1,7 @@
 import streamlit as st # pip install streamlit
 import pandas as pd # pip install pandas
-#import plotly.express as px # pip install plotly-express
-#import plotly.figure_factory as ff
-#from plotly.tools import FigureFactory as ff
 from plotly.figure_factory import create_distplot
+import plotly.express as px
 import openpyxl
 import base64 # Standard Python Module
 from io import StringIO, BytesIO #Standard Python Module
@@ -17,10 +15,10 @@ def generate_excel_download_link(dfsum):
     href= f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="data_download.xlsx">Download Process Capability Analysis</a>'
     return st.markdown(href, unsafe_allow_html=True)
 
-def generate_html_download_link(fig):
+def generate_html_download_link(fig1):
 #https://discuss.streamlit.io/t/how-to-add-a-download-excel-csv-function-to-a-button/4474/5
     towrite = StringIO()
-    fig.write_html(towrite, include_plotlyjs="cdn")
+    fig1.write_html(towrite, include_plotlyjs="cdn")
     towrite = BytesIO(towrite.getvalue().encode())
     b64 = base64.b64encode(towrite.read()).decode()  # some strings
     href= f'<a href="data:text/html;charset=utf-8;base64,{b64}" download="plot.html">Download Plot</a>'
@@ -38,32 +36,23 @@ USL = st.empty().text_input("Enter Upper Spec Limit (USL)")
 
 uploaded_file = st.file_uploader('Choose XLSX file', type='xlsx')
 #st.write('LSL = ' + LSL + ', USL = ' + USL)
-
-showhist = st.checkbox('Show Histogram')
-hist = False
-if showhist:
-     hist = True
-
 if uploaded_file:
     st.markdown('---')
     df = pd.read_excel(uploaded_file, engine='openpyxl')
-    #df = df.dropna(how='all')
     #st.dataframe(df)
-
     # -- Plot dataframe
-    #fig = create_distplot([df[c] for c in df.columns], df.columns, show_hist = hist,show_rug=False)
-    fig = create_distplot([df[c].dropna() for c in df.columns], df.columns, show_hist = hist, show_rug = False)
-
-    fig.add_vline(LSL, line_color="red")
-    fig.add_vline(USL, line_color="red")
-
-    #fig.update_layout(title_text=PName)
-    fig.update_layout(
-        title_text=PName + " Distribution",
+    fig1 = px.histogram(df,color_discrete_sequence=px.colors.qualitative.G10)
+    fig1.add_vline(LSL, line_color="red")
+    fig1.add_vline(USL, line_color="red")
+    fig1.update_layout(
+        title_text=PName + " Histogram",
         xaxis_title=PName,
-        yaxis_title="Density",  
+        yaxis_title="Frequency",
+        legend_title="variable",
+        barmode='overlay'
     )
-    fig.add_annotation(
+    fig1.update_traces(opacity=0.75)
+    fig1.add_annotation(
         x=LSL,
         y=0,
         xref="x",
@@ -86,7 +75,72 @@ if uploaded_file:
         bgcolor="#ff7f0e",
         opacity=0.8
     )
-    fig.add_annotation(
+    fig1.add_annotation(
+        x=USL,
+        y=0,
+        xref="x",
+        yref="y",
+        text="USL="+USL,
+        showarrow=True,
+        font=dict(
+        color="White"
+        ),
+        align="center",
+        arrowhead=1,
+        arrowsize=1,
+        arrowwidth=1,
+        arrowcolor="#636363",
+        ax=50,
+        ay=15,
+        bordercolor="#c7c7c7",
+        borderwidth=1,
+        borderpad=1,
+        bgcolor="#ff7f0e",
+        opacity=0.8
+    )
+    st.plotly_chart(fig1)
+
+    showhist = st.checkbox('Show Histogram in Distribution Plot')
+    hist = False
+    if showhist:
+        hist = True
+
+    fig2 = create_distplot([df[c].dropna() for c in df.columns],
+        df.columns, show_hist = hist, show_rug = False,
+        colors=px.colors.qualitative.G10)
+
+    fig2.add_vline(LSL, line_color="red")
+    fig2.add_vline(USL, line_color="red")
+    fig2.update_layout(
+        title_text=PName + " Distribution",
+        xaxis_title=PName,
+        yaxis_title="Density",
+        legend_title="variable"
+    )
+    fig2.add_annotation(
+        x=LSL,
+        y=0,
+        xref="x",
+        yref="y",
+        text="LSL="+LSL,
+        showarrow=True,
+        font=dict(
+        color="White"
+        ),
+        align="center",
+        arrowhead=1,
+        arrowsize=1,
+        arrowwidth=1,
+        arrowcolor="#636363",
+        ax=50,
+        ay=15,
+        bordercolor="#c7c7c7",
+        borderwidth=1,
+        borderpad=1,
+        bgcolor="#ff7f0e",
+        opacity=0.8
+    )
+    fig2.add_annotation(
         x=USL,
         y=0,
         xref="x",
@@ -110,7 +164,8 @@ if uploaded_file:
         opacity=0.8
     )
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig2)
+
     if LSL and USL:
         dfmin = df.min()
         dfmax = df.max()
@@ -131,7 +186,7 @@ if uploaded_file:
         st.dataframe(dfsum)
         st.subheader('Downloads:')
         generate_excel_download_link(dfsum)
-        generate_html_download_link(fig)
+        generate_html_download_link(fig1)
     else:
         st.warning('Please enter LSL and USL to review Process Capability Analysis', icon="⚠️")
 
