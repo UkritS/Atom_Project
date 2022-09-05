@@ -48,7 +48,7 @@ if uploaded_file:
     st.markdown('---')
     df = pd.read_excel(uploaded_file, engine='openpyxl')
     #df = df.dropna(how='all')
-    st.dataframe(df)
+    #st.dataframe(df)
 
     # -- Plot dataframe
     #fig = create_distplot([df[c] for c in df.columns], df.columns, show_hist = hist,show_rug=False)
