@@ -1,9 +1,10 @@
 import streamlit as st # pip install streamlit
 import pandas as pd # pip install pandas
-from plotly.figure_factory import create_distplot
 #import plotly.express as px # pip install plotly-express
 #import plotly.figure_factory as ff
 #from plotly.tools import FigureFactory as ff
+from plotly.figure_factory import create_distplot
+import openpyxl
 import base64 # Standard Python Module
 from io import StringIO, BytesIO #Standard Python Module
 
@@ -36,21 +37,23 @@ LSL = st.empty().text_input("Enter Lower Spec Limit (LSL)")
 USL = st.empty().text_input("Enter Upper Spec Limit (USL)")
 
 uploaded_file = st.file_uploader('Choose XLSX file', type='xlsx')
+#st.write('LSL = ' + LSL + ', USL = ' + USL)
 
 showhist = st.checkbox('Show Histogram')
 hist = False
 if showhist:
      hist = True
 
-#st.write('LSL = ' + LSL + ', USL = ' + USL)
 if uploaded_file:
     st.markdown('---')
     df = pd.read_excel(uploaded_file, engine='openpyxl')
-    df = df.dropna()
-    #st.dataframe(df)
+    #df = df.dropna(how='all')
+    st.dataframe(df)
 
     # -- Plot dataframe
+    #fig = create_distplot([df[c] for c in df.columns], df.columns, show_hist = hist,show_rug=False)
     fig = create_distplot([df[c].dropna() for c in df.columns], df.columns, show_hist = hist, show_rug = False)
+
     fig.add_vline(LSL, line_color="red")
     fig.add_vline(USL, line_color="red")
 
@@ -63,7 +66,7 @@ if uploaded_file:
         yaxis_title="Density",
         #legend_title="Legend Title",
         font=dict(
-        color="Black"
+        color="White"
         )
     )
     fig.add_annotation(
@@ -137,6 +140,7 @@ if uploaded_file:
         generate_html_download_link(fig)
     else:
         st.warning('Please enter LSL and USL to review Process Capability Analysis', icon="⚠️")
+
 
 #----Contact----
 st.header(":mailbox: Get In Touch With Me!")
