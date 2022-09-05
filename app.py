@@ -36,6 +36,12 @@ LSL = st.empty().text_input("Enter Lower Spec Limit (LSL)")
 USL = st.empty().text_input("Enter Upper Spec Limit (USL)")
 
 uploaded_file = st.file_uploader('Choose XLSX file', type='xlsx')
+
+showhist = st.checkbox('Show Histogram')
+hist = False
+if showhist:
+     hist = True
+
 #st.write('LSL = ' + LSL + ', USL = ' + USL)
 if uploaded_file:
     st.markdown('---')
@@ -44,7 +50,7 @@ if uploaded_file:
 
     # -- Plot dataframe
     #fig = ff.create_distplot([df[c] for c in df.columns], df.columns, show_rug=False)
-    fig = create_distplot([df[c] for c in df.columns], df.columns, show_rug=False)
+    fig = create_distplot([df[c] for c in df.columns], df.columns,show_hist = hist, show_rug=False)
     fig.add_vline(LSL, line_color="red")
     fig.add_vline(USL, line_color="red")
 
