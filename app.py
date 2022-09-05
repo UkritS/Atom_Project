@@ -57,8 +57,8 @@ if uploaded_file:
     #fig.update_layout(title_text=PName)
     fig.update_layout(
         title_text=PName + " Distribution",
-        plot_bgcolor="white",
-        paper_bgcolor="white",
+        #plot_bgcolor="white",
+        #paper_bgcolor="white",
         xaxis_title=PName,
         yaxis_title="Density",
         #legend_title="Legend Title",
